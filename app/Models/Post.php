@@ -18,4 +18,19 @@ class Post extends Model
         'updated_user_id',
         'deleted_user_id'
     ];
+
+    public function scopeActive($query)
+    {
+        return $query->orderBy('status', '1');
+    }
+
+    public function scopeInActive($query)
+    {
+        return $query->orderBy('status', '0');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
