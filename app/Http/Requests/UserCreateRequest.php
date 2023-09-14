@@ -28,7 +28,7 @@ class UserCreateRequest extends FormRequest
             'email' => ['required', Rule::unique('users', 'email')->whereNull('deleted_at')],
             'password' => ['required', 'min:6', 'confirmed'],
             'profile' => ['required', 'mimes:png,jpg'],
-            'type' => ['required', Rule::in([0,1])],
+            'type' => ['required', 'integer', Rule::in([0,1])],
             'phone' => ['nullable'],
             'address' => ['nullable'],
             'dob' => ['nullable'],

@@ -67,4 +67,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Post::class);
     }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_user_id');
+    }
+
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_user_id');
+    }
 }

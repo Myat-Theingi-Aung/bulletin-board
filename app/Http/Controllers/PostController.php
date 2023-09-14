@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Exports\PostsExport;
+use App\Imports\PostsImport;
+use App\Http\Requests\ImportRequest;
 use App\Http\Resources\PostResource;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\PostCreateRequest;
 use App\Http\Requests\PostUpdateRequest;
 
@@ -38,5 +42,17 @@ class PostController extends Controller
         $post->delete();
 
         return response()->json(['success' => 'Post delete successfully!']);
+    }
+
+    public function export()
+    {
+        return Excel::download(new PostsExport, 'posts'.uniqid(time()).'.csv');
+    }
+
+    public function import(ImportRequest $request)
+    {
+        Excel::import(new PostsImport, $request->file);
+        
+        return response()->json(['success' => 'Posts Import Successfully!']);
     }
 }

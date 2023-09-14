@@ -4,7 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Support\Arr;
+use App\Exports\UsersExport;
+use App\Imports\UsersImport;
+use App\Http\Requests\ImportRequest;
 use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\UserCreateRequest;
 use App\Http\Requests\UserUpdateRequest;
@@ -41,7 +46,7 @@ class UserController extends Controller
     public function update(UserUpdateRequest $request, User $user)
     {
         if ($request->hasFile('profile')) {
-            Storage::delete('public/img/' . $user->profile);
+            $user->profile != 'img/default.jpg' ? Storage::delete('public/img/' . $user->profile) : '';
             $file = $request->file('profile');
             $fileName = uniqid() . '-' . $file->getClientOriginalName();
             $file->storeAs('public/img', $fileName);
@@ -55,10 +60,26 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        Storage::delete('public/img/' . $user->profile);
-        // $user->deleted_user_id = Auth::user()->id();
+        $user->update(['deleted_user_id' => Auth::user()->id]);
         $user->delete();
 
         return response()->json(['success' => 'User delete successfully!']);
+    }
+
+    public function count()
+    {
+        return User::withTrashed()->count() + 1;
+    }
+
+    public function export()
+    {
+        return Excel::download(new UsersExport(), 'users'.uniqid(time()).'.csv');
+    }
+
+    public function import(ImportRequest $request) 
+    {
+        Excel::import(new UsersImport, $request->file);
+        
+        return response()->json(['success' => 'Users Import Successfully!']);
     }
 }

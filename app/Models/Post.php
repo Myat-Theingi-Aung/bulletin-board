@@ -29,8 +29,13 @@ class Post extends Model
         return $query->orderBy('status', '0');
     }
 
-    public function user()
+    public function createdUser()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'created_user_id');
+    }
+
+    public function updatedUser()
+    {
+        return $this->belongsTo(User::class, 'updated_user_id');
     }
 }

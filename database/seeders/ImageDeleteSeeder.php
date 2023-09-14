@@ -17,8 +17,10 @@ class ImageDeleteSeeder extends Seeder
         $files = Storage::files($directory);
 
         foreach ($files as $file) {
-            Storage::delete($file);
-            $this->command->info("Deleted: $file");
+            if($file != 'public/img/default.jpg'){
+                Storage::delete($file);
+                $this->command->info("Deleted: $file");
+            }
         }
     }
 }
