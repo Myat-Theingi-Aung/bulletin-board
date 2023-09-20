@@ -38,4 +38,9 @@ class Post extends Model
     {
         return $this->belongsTo(User::class, 'updated_user_id');
     }
+
+    public function deletedUser()
+    {
+        return $this->belongsTo(User::class, 'deleted_user_id');
+    }
 }

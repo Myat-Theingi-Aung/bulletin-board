@@ -10,8 +10,6 @@ class UsersImport implements ToModel, WithHeadingRow
 {
     public function model(array $row)
     {
-        // $createdUser = User::where('name', $row['createdusername'])->first();
-        // $updatedUser = User::where('name', $row['updatedusername'])->first();
         $createdUser = getUserByName($row['createdusername']);
         $updatedUser = getUserByName($row['updatedusername']);
         $type = $row['type'] == 'Admin' ? 0 : 1;
@@ -28,7 +26,7 @@ class UsersImport implements ToModel, WithHeadingRow
                 'type' => $type,
                 'phone' => $row['phone'],
                 'address' => $row['address'],
-                'dob' => null,
+                'dob' => date('Y-m-d', strtotime($row['dateofbirth'])),
                 'created_user_id' => $createdUser->id,
                 'updated_user_id' => $updatedUser->id,
             ];

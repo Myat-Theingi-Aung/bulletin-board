@@ -11,7 +11,7 @@ class PostsExport implements FromCollection, WithMapping, WithHeadings
 {
     public function collection()
     {
-        return Post::all();
+        return Post::withTrashed()->get();
     }
 
     public function map($row): array
@@ -23,8 +23,10 @@ class PostsExport implements FromCollection, WithMapping, WithHeadings
             $row->status == 0 ? 'Inactive' : 'Active',
             $row->createdUser?->name,
             $row->updatedUser?->name,
+            $row->deletedUser?->name,
             $row->created_at,
-            $row->updated_at
+            $row->updated_at,
+            $row->deleted_at
         ];
     }
 
@@ -37,8 +39,10 @@ class PostsExport implements FromCollection, WithMapping, WithHeadings
             'Status',
             'Created user name',
             'Updated user name',
+            'Deleted user name',
             'Created at',
             'Updated at',
+            'Deleted at'
         ];
     }
 }

@@ -10,7 +10,6 @@ class PostsImport implements ToModel, WithHeadingRow
 {
     public function model(array $row)
     {
-        info($row);
         $createdUser = getUserByName($row['created_user_name']);
         $updatedUser = getUserByName($row['updated_user_name']);
         $status = $row['status'] == 'Inactive' ? 0 : 1;

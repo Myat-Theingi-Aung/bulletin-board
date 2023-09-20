@@ -77,4 +77,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo(User::class, 'updated_user_id');
     }
+
+    public function deletedBy()
+    {
+        return $this->belongsTo(User::class, 'deleted_user_id');
+    }
 }

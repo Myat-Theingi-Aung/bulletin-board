@@ -11,7 +11,7 @@ class UsersExport implements FromCollection, WithHeadings, WithMapping
 {
     public function collection()
     {
-        return User::all();
+        return User::withTrashed()->get();
     }
 
     public function map($row): array
@@ -27,8 +27,10 @@ class UsersExport implements FromCollection, WithHeadings, WithMapping
             $row->dob,
             $row->createdBy->name,
             $row->updatedBy?->name,
+            $row->deletedBy?->name,
             $row->created_at,
-            $row->updated_at
+            $row->updated_at,
+            $row->deleted_at
         ];
     }
 
@@ -45,8 +47,10 @@ class UsersExport implements FromCollection, WithHeadings, WithMapping
             'dateOfBirth',
             'createdUserName',
             'updatedUserName',
+            'updatedUserName',
             'createdAt',
-            'updatedAt'
+            'updatedAt',
+            'deletedAt'
         ];
     }
 }
