@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Models\User;
 use App\Exports\PostsExport;
 use App\Imports\PostsImport;
 use App\Http\Requests\ImportRequest;
 use App\Http\Resources\PostResource;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\PostCreateRequest;
 use App\Http\Requests\PostUpdateRequest;
@@ -15,7 +17,30 @@ class PostController extends Controller
 {
     public function index()
     {
-        return response()->json(['posts' => PostResource::collection(Post::all())]);
+        $user = request('user') != '' ? User::find(request('user')) : '';
+
+        if($user instanceof User) {
+            $posts = Post::when(request('search'), function($query){
+                $search = '%' . request('search') . '%';
+                $query->where('title','like', $search)
+                      ->orWhere('description', 'like', $search);
+                });
+
+            if ($user->type == '0') {
+                $posts = $posts->orderBy('id', 'desc')->get();
+            } else {
+                $posts = $posts->where('created_user_id', $user->id)
+                    ->orderBy('id', 'desc')->get();
+            }
+        }else {
+            $posts = Post::where('status', 1)->when(request('search'), function($query){
+                $search = '%' . request('search') . '%';
+                $query->where('title','like', $search)
+                      ->orWhere('description', 'like', $search);
+                })->orderBy('id','desc')->get();
+        }
+
+        return response()->json(['posts' => PostResource::collection($posts)]);
     }
 
     public function store(PostCreateRequest $request)
@@ -39,6 +64,7 @@ class PostController extends Controller
 
     public function destroy(Post $post)
     {
+        $post->update(['deleted_user_id' => Auth::user()->id]);
         $post->delete();
 
         return response()->json(['success' => 'Post delete successfully!']);

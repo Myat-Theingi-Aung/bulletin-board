@@ -18,24 +18,49 @@ class UserController extends Controller
 {
     public function index()
     {
-        return response()->json(['users' => UserResource::collection(User::all())]);
+        $name = request('name');
+        $email = request('email');
+        $from = request('from');
+        $to = request('to');
+
+        $users = User::query()
+            ->when($name, function ($query) use ($name) {
+                $query->where('name', 'like', '%' . $name . '%');
+            })
+            ->when($email, function ($query) use ($email) {
+                $query->where('email', 'like', '%' . $email . '%');
+            })
+            ->when($from, function ($query) use ($from) {
+                $query->whereDate('created_at', '>=', $from);
+            })
+            ->when($to, function ($query) use ($to) {
+                $query->whereDate('created_at', '<=', $to);
+            })
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return response()->json(['users' => UserResource::collection($users)]);
     }
 
     public function store(UserCreateRequest $request)
     {
-        $user = User::create($request->all());
+        if($request->flag == 'confirm') {
+            $user = User::create($request->all());
 
-        $path = storage_path('app/public/img/');
-        if (!is_dir($path)) {
-            mkdir($path, 0777, true);
+            $path = storage_path('app/public/img/');
+            if (!is_dir($path)) {
+                mkdir($path, 0777, true);
+            }
+
+            $file = $request->file('profile');
+            $fileName = uniqid() . '-' . $file->getClientOriginalName();
+            $file->storeAs('public/img', $fileName);
+            $user->update(['profile' => $fileName]);
+
+            return response()->json(['success' => 'User create successfully!', 'user' => new UserResource($user)]);
         }
-
-        $file = $request->file('profile');
-        $fileName = uniqid() . '-' . $file->getClientOriginalName();
-        $file->storeAs('public/img', $fileName);
-        $user->update(['profile' => $fileName]);
-
-        return response()->json(['success' => 'User create successfully!', 'user' => new UserResource($user)]);
+        
+        return response()->json(['success' => 'Success']);
     }
 
     public function show(User $user)
@@ -68,7 +93,7 @@ class UserController extends Controller
 
     public function count()
     {
-        return User::withTrashed()->count() + 1;
+        return response()->json(['count' => User::withTrashed()->count() + 1]);
     }
 
     public function export()
@@ -81,5 +106,16 @@ class UserController extends Controller
         Excel::import(new UsersImport, $request->file);
         
         return response()->json(['success' => 'Users Import Successfully!']);
+    }
+
+    public function image($filename)
+    {
+        $path = storage_path('app/public/img/' . $filename);
+
+        if (!file_exists($path)) {
+            return response()->json(['message' => 'Image not found.'], 404);
+        }
+
+        return response()->file($path);
     }
 }
