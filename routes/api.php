@@ -29,8 +29,5 @@ Route::middleware('auth:sanctum')->group(function(){
   Route::get('/posts-export', [ PostController::class, 'export']);
   Route::post('/posts-import', [ PostController::class, 'import']);
 
-  Route::post('forgot', [PasswordController::class, 'forgot']);
-  Route::post('reset/{token}', [PasswordController::class, 'reset'])->name('password.reset');
-
   Route::post('/logout', [AuthController::class, 'logout']);
 });
