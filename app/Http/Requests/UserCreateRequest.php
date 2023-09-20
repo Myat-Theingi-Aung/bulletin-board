@@ -25,16 +25,18 @@ class UserCreateRequest extends FormRequest
     {
         return [
             'name' => ['required'],
-            'email' => ['required', Rule::unique('users', 'email')->whereNull('deleted_at')],
+            'email' => ['required', 'email', Rule::unique('users', 'email')->whereNull('deleted_at')],
             'password' => ['required', 'min:6', 'confirmed'],
-            'profile' => ['required', 'mimes:png,jpg'],
+            'password_confirmation' => ['required'],
+            'profile' => ['required', 'mimes:png,jpg', 'max:2048'],
             'type' => ['required', 'integer', Rule::in([0,1])],
             'phone' => ['nullable'],
             'address' => ['nullable'],
             'dob' => ['nullable'],
+            'flag' => ['required'],
             'created_user_id' => ['required', Rule::exists(User::class, 'id')->whereNull('deleted_at')],
             'updated_user_id' => ['required', Rule::exists(User::class, 'id')->whereNull('deleted_at')],
-            'deleted_user_id' => ['nullable', Rule::exists(User::class, 'id')->whereNull('deleted_at')]
+            // 'deleted_user_id' => ['nullable', Rule::exists(User::class, 'id')->whereNull('deleted_at')]
         ];
     }
 

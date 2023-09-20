@@ -18,11 +18,11 @@ class PostCreateRequest extends FormRequest
         return [
             'title' => ['required', Rule::unique('posts', 'title')->whereNull('deleted_at')],
             'description' => ['required'],
-            'status' => ['required', Rule::in([0,1])],
+            // 'status' => ['nullable', Rule::in([0,1])],
             'user_id' => ['required', Rule::exists(User::class, 'id')->whereNull('deleted_at')],
             'created_user_id' => ['required', Rule::exists(User::class, 'id')->whereNull('deleted_at')],
             'updated_user_id' => ['required', Rule::exists(User::class, 'id')->whereNull('deleted_at')],
-            'deleted_user_id' => ['nullable', Rule::exists(User::class, 'id')->whereNull('deleted_at')]
+            // 'deleted_user_id' => ['nullable', Rule::exists(User::class, 'id')->whereNull('deleted_at')]
         ];
     }
 

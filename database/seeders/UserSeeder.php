@@ -14,7 +14,7 @@ class UserSeeder extends Seeder
             'name' => 'Admin',
             'email' => 'admin@gmail.com',
             'password' => bcrypt('password'),
-            'profile' => 'img/default.jpg',
+            'profile' => 'default.jpg',
             'type' => '0',
             'phone' => '09987654321',
             'address' => 'yangon',
