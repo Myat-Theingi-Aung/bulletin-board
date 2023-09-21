@@ -37,9 +37,19 @@ class UserController extends Controller
                 $query->whereDate('created_at', '<=', $to);
             })
             ->orderBy('id', 'desc')
-            ->get();
+            ->paginate(10);
 
-        return response()->json(['users' => UserResource::collection($users)]);
+        return response()->json([
+            'users' => UserResource::collection($users),
+            'pagination' => [
+                'total' => $users->total(),
+                'per_page' => $users->perPage(),
+                'current_page' => $users->currentPage(),
+                'last_page' => $users->lastPage(),
+                'from' => $users->firstItem(),
+                'to' => $users->lastItem(),
+            ],
+        ]);
     }
 
     public function store(UserCreateRequest $request)

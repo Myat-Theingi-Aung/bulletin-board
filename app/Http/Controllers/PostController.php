@@ -27,20 +27,30 @@ class PostController extends Controller
                 });
 
             if ($user->type == '0') {
-                $posts = $posts->orderBy('id', 'desc')->get();
+                $posts = $posts->orderBy('id', 'desc')->paginate(10);
             } else {
                 $posts = $posts->where('created_user_id', $user->id)
-                    ->orderBy('id', 'desc')->get();
+                    ->orderBy('id', 'desc')->paginate(10);
             }
         }else {
             $posts = Post::where('status', 1)->when(request('search'), function($query){
                 $search = '%' . request('search') . '%';
                 $query->where('title','like', $search)
                       ->orWhere('description', 'like', $search);
-                })->orderBy('id','desc')->get();
+                })->orderBy('id','desc')->paginate(10);
         }
 
-        return response()->json(['posts' => PostResource::collection($posts)]);
+        return response()->json([
+            'posts' => PostResource::collection($posts),
+            'pagination' => [
+                'total' => $posts->total(),
+                'per_page' => $posts->perPage(),
+                'current_page' => $posts->currentPage(),
+                'last_page' => $posts->lastPage(),
+                'from' => $posts->firstItem(),
+                'to' => $posts->lastItem(),
+            ],
+        ]);
     }
 
     public function store(PostCreateRequest $request)
