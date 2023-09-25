@@ -27,7 +27,7 @@ class UserUpdateRequest extends FormRequest
         return [
             'name' => ['required'],
             'email' => ['required', Rule::unique('users', 'email')->whereNull('deleted_at')->ignore($id)],
-            'profile' => ['required', 'mimes:png,jpg'],
+            'profile' => ['nullable', 'mimes:png,jpg'],
             'type' => ['required', Rule::in([0,1])],
             'phone' => ['nullable'],
             'address' => ['nullable'],

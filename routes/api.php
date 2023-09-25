@@ -15,7 +15,7 @@ Route::get('/users', [ UserController::class, 'index']);
 Route::middleware('auth:sanctum')->group(function(){
   Route::post('/users', [ UserController::class, 'store']);
   Route::get('/users/{user}', [ UserController::class, 'show']);
-  Route::put('/users/{user}', [ UserController::class, 'update']);
+  Route::post('/users/{user}', [ UserController::class, 'update']);
   Route::delete('/users/{user}', [ UserController::class, 'destroy']);
   Route::get('/users-export', [ UserController::class, 'export' ]);
   Route::post('/users-import', [ UserController::class, 'import']);
