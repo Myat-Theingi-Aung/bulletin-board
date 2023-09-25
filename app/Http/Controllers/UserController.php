@@ -41,6 +41,7 @@ class UserController extends Controller
 
         return response()->json([
             'users' => UserResource::collection($users),
+            'all_users' => UserResource::collection(User::all()),
             'pagination' => [
                 'total' => $users->total(),
                 'per_page' => $users->perPage(),
