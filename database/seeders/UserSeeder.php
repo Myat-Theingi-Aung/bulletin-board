@@ -22,5 +22,18 @@ class UserSeeder extends Seeder
             'created_user_id' => 1,
             'updated_user_id' => 1
         ]);
+
+        User::create([
+            'name' => 'User',
+            'email' => 'user@gmail.com',
+            'password' => bcrypt('password'),
+            'profile' => 'default.jpg',
+            'type' => '0',
+            'phone' => '09987987987',
+            'address' => 'yangon',
+            'dob' => Carbon::now(),
+            'created_user_id' => 1,
+            'updated_user_id' => 1
+        ]);
     }
 }

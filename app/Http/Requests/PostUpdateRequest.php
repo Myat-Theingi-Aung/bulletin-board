@@ -15,11 +15,12 @@ class PostUpdateRequest extends FormRequest
 
     public function rules(): array
     {
+        $id = $this->route('post')->id;
         return [
-            'title' => ['required', Rule::unique('posts', 'title')->whereNull('deleted_at')],
+            'title' => ['required', Rule::unique('posts', 'title')->whereNull('deleted_at')->ignore($id)],
             'description' => ['required'],
             'status' => ['required', Rule::in([0,1])],
-            'user_id' => ['required', Rule::exists(User::class, 'id')->whereNull('deleted_at')],
+            'flag' => ['required', 'boolean'],
             'created_user_id' => ['required', Rule::exists(User::class, 'id')->whereNull('deleted_at')],
             'updated_user_id' => ['required', Rule::exists(User::class, 'id')->whereNull('deleted_at')],
             'deleted_user_id' => ['nullable', Rule::exists(User::class, 'id')->whereNull('deleted_at')]
@@ -29,7 +30,6 @@ class PostUpdateRequest extends FormRequest
     public function messages()
     {
         return [
-            'user_id.required' => "User name is required",
             'created_user_id' => "Created user name is required",
             'updated_user_id' => "Updated user name is required"
         ];

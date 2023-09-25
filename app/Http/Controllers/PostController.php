@@ -55,6 +55,8 @@ class PostController extends Controller
 
     public function store(PostCreateRequest $request)
     {
+        if (!$request->flag) { return response()->json(['success' => 'Success']); }
+
         $post = Post::create($request->all());
 
         return response()->json(['success' => 'Post create successfully', 'post' => new PostResource($post)]);
@@ -67,6 +69,8 @@ class PostController extends Controller
 
     public function update(PostUpdateRequest $request, Post $post)
     {
+        if (!$request->flag) { return response()->json(['success' => 'Success']); }
+
         $post->update($request->all());
 
         return response()->json(['success' => 'Post update successfully', 'post' => new PostResource($post)]);

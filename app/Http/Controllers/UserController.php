@@ -54,7 +54,7 @@ class UserController extends Controller
 
     public function store(UserCreateRequest $request)
     {
-        if($request->flag == 'confirm') {
+        if(filter_var($request->flag, FILTER_VALIDATE_BOOLEAN)) {
             $user = User::create($request->all());
 
             $path = storage_path('app/public/img/');
