@@ -16,7 +16,7 @@ class PostCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => ['required', Rule::unique('posts', 'title')->whereNull('deleted_at')],
+            'title' => ['required', 'max:255', Rule::unique('posts', 'title')->whereNull('deleted_at')],
             'description' => ['required'],
             // 'status' => ['nullable', Rule::in([0,1])],
             'flag' => ['required', 'boolean'],

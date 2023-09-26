@@ -9,6 +9,7 @@ use App\Imports\PostsImport;
 use App\Http\Requests\ImportRequest;
 use App\Http\Resources\PostResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\PostCreateRequest;
 use App\Http\Requests\PostUpdateRequest;
@@ -64,11 +65,15 @@ class PostController extends Controller
 
     public function show(Post $post)
     {
+        Gate::authorize('check-user', $post);
+
         return response()->json(['post' => new PostResource($post)]);
     }
 
     public function update(PostUpdateRequest $request, Post $post)
     {
+        Gate::authorize('check-user', $post);
+        
         if (!$request->flag) { return response()->json(['success' => 'Success']); }
 
         $post->update($request->all());

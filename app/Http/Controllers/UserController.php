@@ -22,6 +22,7 @@ class UserController extends Controller
         $email = request('email');
         $from = request('from');
         $to = request('to');
+        $user = request('user') != '' ? User::find(request('user')) : '';
 
         $users = User::query()
             ->when($name, function ($query) use ($name) {
@@ -36,8 +37,9 @@ class UserController extends Controller
             ->when($to, function ($query) use ($to) {
                 $query->whereDate('created_at', '<=', $to);
             })
-            ->orderBy('id', 'desc')
-            ->paginate(10);
+            ->orderBy('id', 'desc');
+        
+        $users = ($user instanceof User && $user->type == '0') ? $users->paginate(10) : $users->where('created_user_id', $user->id)->paginate(10);
 
         return response()->json([
             'users' => UserResource::collection($users),
@@ -100,11 +102,6 @@ class UserController extends Controller
         $user->delete();
 
         return response()->json(['success' => 'User delete successfully!']);
-    }
-
-    public function count()
-    {
-        return response()->json(['count' => User::withTrashed()->count() + 1]);
     }
 
     public function export()
