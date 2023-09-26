@@ -11,7 +11,13 @@ class PostsExport implements FromCollection, WithMapping, WithHeadings
 {
     public function collection()
     {
-        return Post::withTrashed()->get();
+        $posts = Post::withTrashed();
+
+        if (auth()->user()->type == 1) {
+            $posts->where('created_user_id', auth()->user()->id);
+        }
+
+        return $posts->get();
     }
 
     public function map($row): array

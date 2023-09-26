@@ -36,7 +36,6 @@ class UserCreateRequest extends FormRequest
             'flag' => ['required'],
             'created_user_id' => ['required', Rule::exists(User::class, 'id')->whereNull('deleted_at')],
             'updated_user_id' => ['required', Rule::exists(User::class, 'id')->whereNull('deleted_at')],
-            // 'deleted_user_id' => ['nullable', Rule::exists(User::class, 'id')->whereNull('deleted_at')]
         ];
     }
 

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 class ImageDeleteSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Remove old images form storage
      */
     public function run(): void
     {

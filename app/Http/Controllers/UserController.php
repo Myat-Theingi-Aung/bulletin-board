@@ -16,6 +16,11 @@ use App\Http\Requests\UserUpdateRequest;
 
 class UserController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
         $name = request('name');
@@ -55,6 +60,12 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  UserCreateRequest  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(UserCreateRequest $request)
     {
         if(filter_var($request->flag, FILTER_VALIDATE_BOOLEAN)) {
@@ -76,11 +87,24 @@ class UserController extends Controller
         return response()->json(['success' => 'Success']);
     }
 
+    /**
+     * Display the specified resource.
+     *
+     * @param  User  $user
+     * @return \Illuminate\Http\Response
+     */
     public function show(User $user)
     {
         return response()->json(['user' => new UserResource($user)]);
     }
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  UserUpdateRequest  $request
+     * @param  User $user
+     * @return \Illuminate\Http\Response
+     */
     public function update(UserUpdateRequest $request, User $user)
     {
         if ($request->hasFile('profile')) {
@@ -96,6 +120,12 @@ class UserController extends Controller
         return response()->json(['success' => 'User update successfully!', 'user' => new UserResource($user)]);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  User $user
+     * @return \Illuminate\Http\Response
+     */
     public function destroy(User $user)
     {
         $user->update(['deleted_user_id' => Auth::user()->id]);
@@ -104,11 +134,22 @@ class UserController extends Controller
         return response()->json(['success' => 'User delete successfully!']);
     }
 
+    /**
+     * To download user information
+     * 
+     * @return \Illuminate\Http\Response
+     */
     public function export()
     {
         return Excel::download(new UsersExport(), 'users'.uniqid(time()).'.csv');
     }
 
+    /**
+     * To import user information
+     * 
+     * @param ImportRequest $request request with inputs 
+     * @return \Illuminate\Http\Response
+     */
     public function import(ImportRequest $request) 
     {
         Excel::import(new UsersImport, $request->file);
@@ -116,6 +157,12 @@ class UserController extends Controller
         return response()->json(['success' => 'Users Import Successfully!']);
     }
 
+    /**
+     * To get specific user image
+     *
+     * @param File $filename
+     * @return \Illuminate\Http\Response
+     */
     public function image($filename)
     {
         $path = storage_path('app/public/img/' . $filename);

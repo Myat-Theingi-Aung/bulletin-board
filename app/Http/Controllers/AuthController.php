@@ -10,6 +10,12 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
+    /**
+     * User login
+     *
+     * @param LoginRequest $request
+     * @return \Illuminate\Http\Response $token $remember_token $user
+     */
     public function login(LoginRequest $request)
     {
         $credentials = $request->only('email', 'password');
@@ -27,6 +33,12 @@ class AuthController extends Controller
         return response()->json(['error' => 'Email or password is incorrect!'], 422);
     }
 
+    /**
+     * User logout
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();

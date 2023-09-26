@@ -8,21 +8,27 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class PostCreateRequest extends FormRequest
 {
+    /**
+     * Determine if the user is authorized to make this request.
+     */
     public function authorize(): bool
     {
         return true;
     }
 
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
+     */
     public function rules(): array
     {
         return [
             'title' => ['required', 'max:255', Rule::unique('posts', 'title')->whereNull('deleted_at')],
             'description' => ['required'],
-            // 'status' => ['nullable', Rule::in([0,1])],
             'flag' => ['required', 'boolean'],
             'created_user_id' => ['required', Rule::exists(User::class, 'id')->whereNull('deleted_at')],
             'updated_user_id' => ['required', Rule::exists(User::class, 'id')->whereNull('deleted_at')],
-            // 'deleted_user_id' => ['nullable', Rule::exists(User::class, 'id')->whereNull('deleted_at')]
         ];
     }
 

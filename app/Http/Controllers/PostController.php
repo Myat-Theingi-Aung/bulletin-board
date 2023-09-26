@@ -11,11 +11,17 @@ use App\Http\Resources\PostResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Database\QueryException;
 use App\Http\Requests\PostCreateRequest;
 use App\Http\Requests\PostUpdateRequest;
 
 class PostController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
         $user = request('user') != '' ? User::find(request('user')) : '';
@@ -54,6 +60,12 @@ class PostController extends Controller
         ]);
     }
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  PostCreateRequest  $request
+     * @return \Illuminate\Http\Response
+     */
     public function store(PostCreateRequest $request)
     {
         if (!$request->flag) { return response()->json(['success' => 'Success']); }
@@ -63,6 +75,12 @@ class PostController extends Controller
         return response()->json(['success' => 'Post create successfully', 'post' => new PostResource($post)]);
     }
 
+    /**
+     * Display the specified resource.
+     *
+     * @param  Post  $post
+     * @return \Illuminate\Http\Response
+     */
     public function show(Post $post)
     {
         Gate::authorize('check-user', $post);
@@ -70,6 +88,13 @@ class PostController extends Controller
         return response()->json(['post' => new PostResource($post)]);
     }
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  PostUpdateRequest  $request
+     * @param  Post $post
+     * @return \Illuminate\Http\Response
+     */
     public function update(PostUpdateRequest $request, Post $post)
     {
         Gate::authorize('check-user', $post);
@@ -81,6 +106,12 @@ class PostController extends Controller
         return response()->json(['success' => 'Post update successfully', 'post' => new PostResource($post)]);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  Post $post
+     * @return \Illuminate\Http\Response
+     */
     public function destroy(Post $post)
     {
         $post->update(['deleted_user_id' => Auth::user()->id]);
@@ -89,21 +120,37 @@ class PostController extends Controller
         return response()->json(['success' => 'Post delete successfully!']);
     }
 
+    /**
+     * To download post information
+     * 
+     * @return \Illuminate\Http\Response
+     */
     public function export()
     {
         return Excel::download(new PostsExport, 'posts'.uniqid(time()).'.csv');
     }
 
+    /**
+     * To import post information
+     * 
+     * @param ImportRequest $request request with inputs 
+     * @return \Illuminate\Http\Response
+     */
     public function import(ImportRequest $request)
     {
-        $csv = array_map('str_getcsv', file($request->file));
+        try {
+            $csv = array_map('str_getcsv', file($request->file));
 
-        if (count($csv[0]) != 3) {
-            return response()->json(['error' => 'CSV file must have exactly 3 columns.'],422);
-        }
+            if (count($csv[0]) != 3) {
+                return response()->json(['error' => 'CSV file must have exactly 3 columns.'],422);
+            }
+            Excel::import(new PostsImport, $request->file);
 
-        Excel::import(new PostsImport, $request->file);
-        
-        return response()->json(['success' => 'Posts Import Successfully!']);
+            return response()->json(['success' => 'Posts Import Successfully!']);
+
+        }catch(QueryException $e) 
+        {
+            if ($e->errorInfo[1] === 1062) { return response()->json(['error' => 'Post title must be unique'], 400);}
+        } 
     }
 }
