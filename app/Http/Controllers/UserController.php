@@ -44,7 +44,7 @@ class UserController extends Controller
             })
             ->orderBy('id', 'desc');
         
-        $users = ($user instanceof User && $user->type == '0') ? $users->paginate(10) : $users->where('created_user_id', $user->id)->paginate(10);
+        $users = ($user instanceof User && $user->type == '0') ? $users->paginate(10) : $users->where('created_user_id', $user?->id)->paginate(10);
 
         return response()->json([
             'users' => UserResource::collection($users),

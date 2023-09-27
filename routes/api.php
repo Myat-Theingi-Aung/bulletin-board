@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 
@@ -10,6 +11,9 @@ Route::post('/register', [ UserController::class, 'store']);
 
 Route::get('/posts', [ PostController::class, 'index']);
 Route::get('/users', [ UserController::class, 'index']);
+
+Route::post('/forgot', [ PasswordController::class, 'ForgotPassword']);
+Route::post('/reset/{token}', [ PasswordController::class, 'ResetPassword']);
 
 Route::middleware('auth:sanctum')->group(function(){
   Route::post('/users', [ UserController::class, 'store']);
@@ -26,6 +30,8 @@ Route::middleware('auth:sanctum')->group(function(){
   Route::delete('/posts/{post}', [ PostController::class, 'destroy']);
   Route::get('/posts-export', [ PostController::class, 'export']);
   Route::post('/posts-import', [ PostController::class, 'import']);
+
+  Route::post('/change-password', [ PasswordController::class, 'changePassword']);
 
   Route::post('/logout', [AuthController::class, 'logout']);
 });
