@@ -3,12 +3,23 @@
 namespace App\Imports;
 
 use App\Models\Post;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithValidation;
 
-class PostsImport implements ToModel, WithHeadingRow
+class PostsImport implements ToModel, WithHeadingRow, WithValidation
 {
+    public function rules(): array
+    {
+        return [
+            'title' => ['required', 'max:255', Rule::unique('posts', 'title')->whereNull('deleted_at')],
+            'description' => ['required'],
+            'status' => ['required', Rule::in([0, 1])],
+        ];
+    }
+    
     public function model(array $row)
     {
         // $createdUser = getUserByName($row['created_user_name']);

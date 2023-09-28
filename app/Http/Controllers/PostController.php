@@ -138,19 +138,13 @@ class PostController extends Controller
      */
     public function import(ImportRequest $request)
     {
-        try {
-            $csv = array_map('str_getcsv', file($request->file));
+        $csv = array_map('str_getcsv', file($request->file));
 
-            if (count($csv[0]) != 3) {
-                return response()->json(['error' => 'CSV file must have exactly 3 columns.'],422);
-            }
-            Excel::import(new PostsImport, $request->file);
+        if (count($csv[0]) != 3) {
+            return response()->json(['error' => 'CSV file must have exactly 3 columns.'],422);
+        }
+        Excel::import(new PostsImport, $request->file);
 
-            return response()->json(['success' => 'Posts Import Successfully!']);
-
-        }catch(QueryException $e) 
-        {
-            if ($e->errorInfo[1] === 1062) { return response()->json(['error' => 'Post title must be unique'], 400);}
-        } 
+        return response()->json(['success' => 'Posts Import Successfully!']);
     }
 }
