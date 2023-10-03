@@ -140,7 +140,7 @@ class PostController extends Controller
         $csv = array_map('str_getcsv', file($request->file));
 
         if (count($csv[0]) != 3) {
-            return response()->json(['error' => 'CSV file must have exactly 3 columns.'],422);
+            return response()->json(['errors' => ['file' => ['CSV file must have exactly 3 columns.']]],422);
         }
         Excel::import(new PostsImport, $request->file);
 
