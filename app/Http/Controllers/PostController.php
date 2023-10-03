@@ -11,7 +11,6 @@ use App\Http\Resources\PostResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Database\QueryException;
 use App\Http\Requests\PostCreateRequest;
 use App\Http\Requests\PostUpdateRequest;
 
@@ -24,7 +23,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $user = request('user') != '' ? User::find(request('user')) : '';
+        $user = (request('user') !== 'undefined' && request('user') !== '') ? User::find(request('user')) : '';
 
         if($user instanceof User) {
             $posts = Post::when(request('search'), function($query){
